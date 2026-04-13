@@ -17,7 +17,7 @@ classdef DWM_graph < handle
 %         end
 
         function lines = get_lines(obj)
-            axis = obj.fig.Children;
+            axis = get_ax_from_fig(obj.fig);
             lines = axis.Children;
         end
 
@@ -28,7 +28,7 @@ classdef DWM_graph < handle
         end
 
         function add_new_line(obj, color, style, width)
-            axis = obj.fig.Children;
+            axis = get_ax_from_fig(obj.fig);
             if isempty(axis)
                 axis = axes(obj.fig);
             end
@@ -42,13 +42,13 @@ classdef DWM_graph < handle
         end
 
         function clear(obj)
-            axis = obj.fig.Children;
+            axis = get_ax_from_fig(obj.fig);
             delete(axis);
-            
+            axes(obj.fig);
         end
 
         function gray_all(obj)
-            axis = obj.fig.Children;
+            axis = get_ax_from_fig(obj.fig);
             if ~isempty(axis)
                 lines = axis.Children;
                 for i = 1:numel(lines)
@@ -89,7 +89,8 @@ end
 function line_out = line_factory(color, style, width, axis)
 x = xlim;
 y = ylim;
-line_out = line(axis, [x(1) x(1)], [y(1) y(1)], 'color', color, 'linestyle', style, 'linewidth', width);
+line_out = line(axis, [x(1) x(1)], [y(1) y(1)], 'color', color, ...
+    'linestyle', style, 'linewidth', width);
 end
 
 
@@ -112,4 +113,30 @@ y = line.YData;
 line.XData = x;
 line.YData = y;
 end
+
+
+function ax = get_ax_from_fig(fig)
+
+Ch_fig = fig.Children;
+
+clc
+out_i = [];
+for i = 1:numel(Ch_fig)
+    disp([num2str(i) ' : ' class(Ch_fig(i))])
+    if class(Ch_fig(i)) == "matlab.graphics.axis.Axes"
+        out_i = [out_i i];
+    end
+end
+
+if isempty(out_i)
+    error('no axis in figure')
+elseif numel(out_i) > 1
+    error('too many axis in figure (more than one)')
+else
+    ax = Ch_fig(out_i);
+end
+
+end
+
+
 
