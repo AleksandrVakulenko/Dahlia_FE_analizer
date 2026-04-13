@@ -2,15 +2,15 @@
 
 
 
-Meas_period = 5;
+Meas_period = 10;
 
 figure
 
 
-Ammeter = Ammeter2('COM9');
+Ammeter = Ammeter2('COM3');
 pause(0.1)
 Amp = 0.25; % V
-Period = 2; % s
+Period = 5; % s
 DC_bias = 0; % V
 Duty = 50; % [100%]
 wf_triangle = Pulse_waveform_init(Amp, Period, DC_bias, Duty, "b", "sine", false);
