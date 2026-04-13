@@ -1,3 +1,6 @@
+
+% FIXME: put in Fern::common
+
 function [result, bytes_out] = adler32(bytes)
 
 s1 = uint32(1);
@@ -23,3 +26,12 @@ end
 function result = mult_uint32(x, y)
 result = uint32( mod( double(x) * double(y) , uint64(2)^32) );
 end
+
+
+
+
+%% Other way
+% data = uint8(char(String));
+% adler = java.util.zip.Adler32();
+% adler.update(data);
+% adler32_val = adler.getValue()
