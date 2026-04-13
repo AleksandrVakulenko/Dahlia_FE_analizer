@@ -5,15 +5,15 @@
 % F9 on Ammeter.delete -->
 % unable to reconnect
 
-classdef Ammeter2 < handle
+classdef Dahlia < handle
     %--------------------------------PUBLIC--------------------------------
     methods (Access = public)
-        function obj = Ammeter2(port_name)
+        function obj = Dahlia(port_name)
             close_all_classes(class(obj));
             obj.COM_port_str = char(port_name);
             port_name_check(obj.COM_port_str);
             obj.Serial_obj = serialport(obj.COM_port_str, 9600);
-            disp(['Ammeter2 connected at port: ' obj.COM_port_str])
+            disp(['Dahlia connected at port: ' obj.COM_port_str])
             obj.connected_flag = 1;
         end
 
@@ -21,7 +21,7 @@ classdef Ammeter2 < handle
             if obj.connected_flag == 1
                 %                 obj.sink_to_gnd();
                 delete(obj.Serial_obj);
-                disp('Ammeter2 closed');
+                disp('Dahlia closed');
             end
         end
 

@@ -1,6 +1,6 @@
 
 
-Ammeter = Ammeter2('COM4');
+Ammeter = Dahlia('COM4');
 
 
 clc

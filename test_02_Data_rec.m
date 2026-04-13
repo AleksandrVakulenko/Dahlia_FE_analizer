@@ -5,7 +5,7 @@
 % 2024.07.23 PASSED for 16 kSPS
 % 2024.07.24 NOT PASSED for 16 kSPS with wfgen
 clc
-Ammeter = Ammeter2('COM3');
+Ammeter = Dahlia('COM3');
 
 
 %%

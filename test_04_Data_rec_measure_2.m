@@ -7,7 +7,7 @@
 %%
 
 
-Ammeter = Ammeter2('COM3');
+Ammeter = Dahlia('COM3');
 
 clc
 figure('Position', [526.0000  360.5000  560.0000  420.0000])

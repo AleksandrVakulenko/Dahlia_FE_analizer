@@ -2,7 +2,7 @@
 % NEED AN UPDATE
 
 clc
-Ammeter = Ammeter2('COM3');
+Ammeter = Dahlia('COM3');
 
 
 %%

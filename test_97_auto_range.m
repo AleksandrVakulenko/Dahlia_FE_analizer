@@ -3,7 +3,7 @@
 % TEST FOR UNRELEASET AUTO-RANGE FUNCTION
 
 clc
-Ammeter = Ammeter2('COM3');
+Ammeter = Dahlia('COM3');
 
 %%
 Ammeter.CMD_data_req;

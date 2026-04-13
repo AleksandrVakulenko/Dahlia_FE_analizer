@@ -2,7 +2,7 @@
 
 
 
-Am = Ammeter2('COM4');
+Am = Dahlia('COM4');
 %%
 
 Am.Capacitor('150n');

@@ -7,7 +7,7 @@ Meas_period = 10;
 figure
 
 
-Ammeter = Ammeter2('COM3');
+Ammeter = Dahlia('COM3');
 pause(0.1)
 Amp = 0.25; % V
 Period = 5; % s

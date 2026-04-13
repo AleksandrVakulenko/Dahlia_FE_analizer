@@ -59,7 +59,7 @@ plot(Voltage_target, Voltage_target-ADC_2_g,'.')
 
 %%
 clc
-Ammeter = Ammeter2('COM3');
+Ammeter = Dahlia('COM3');
 
 
 %%

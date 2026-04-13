@@ -20,7 +20,7 @@ CMD_packet = [uint8(cmd) size_bytes checksum_bytes d_bytes];
 %%
 
 clc
-Ammeter = Ammeter2('COM3');
+Ammeter = Dahlia('COM3');
 
 N = 2;
 Data = uint32(1:N);
