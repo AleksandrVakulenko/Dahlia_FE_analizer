@@ -1,6 +1,6 @@
 
 % TODO:
-% 1) replace fig to axis
+% 1) replace fig to Axes
 % 2) add smart lim
 
 classdef DWM_graph < handle
@@ -17,8 +17,9 @@ classdef DWM_graph < handle
 %         end
 
         function lines = get_lines(obj)
-            axis = get_ax_from_fig(obj.fig);
-            lines = axis.Children;
+            Axes = get_ax_from_fig(obj.fig);
+            lines = get_line_from_ax(Axes);
+%             lines = Axes.Children;
         end
 
         function set_props_to_active(obj, color, style, width)
@@ -28,11 +29,11 @@ classdef DWM_graph < handle
         end
 
         function add_new_line(obj, color, style, width)
-            axis = get_ax_from_fig(obj.fig);
-            if isempty(axis)
-                axis = axes(obj.fig);
+            Axes = get_ax_from_fig(obj.fig);
+            if isempty(Axes)
+                Axes = axes(obj.fig);
             end
-            obj.active_line = line_factory(color, style, width, axis);
+            obj.active_line = line_factory(color, style, width, Axes);
         end
 
         function update_last(obj, x, y)
@@ -42,15 +43,16 @@ classdef DWM_graph < handle
         end
 
         function clear(obj)
-            axis = get_ax_from_fig(obj.fig);
-            delete(axis);
+            Axes = get_ax_from_fig(obj.fig);
+            delete(Axes);
             axes(obj.fig);
         end
 
         function gray_all(obj)
-            axis = get_ax_from_fig(obj.fig);
-            if ~isempty(axis)
-                lines = axis.Children;
+            Axes = get_ax_from_fig(obj.fig);
+            if ~isempty(Axes)
+%                 lines = Axes.Children;
+                lines = get_line_from_ax(Axes);
                 for i = 1:numel(lines)
                     color = lines(i).Color;
                     color = rgb2gray(color);
@@ -86,10 +88,10 @@ end
 
 
 
-function line_out = line_factory(color, style, width, axis)
+function line_out = line_factory(color, style, width, Axes)
 x = xlim;
 y = ylim;
-line_out = line(axis, [x(1) x(1)], [y(1) y(1)], 'color', color, ...
+line_out = line(Axes, [x(1) x(1)], [y(1) y(1)], 'color', color, ...
     'linestyle', style, 'linewidth', width);
 end
 
@@ -122,21 +124,38 @@ Ch_fig = fig.Children;
 clc
 out_i = [];
 for i = 1:numel(Ch_fig)
-    disp([num2str(i) ' : ' class(Ch_fig(i))])
+%     disp([num2str(i) ' : ' class(Ch_fig(i))])
     if class(Ch_fig(i)) == "matlab.graphics.axis.Axes"
         out_i = [out_i i];
     end
 end
 
 if isempty(out_i)
-    error('no axis in figure')
+    error('no axes in figure')
 elseif numel(out_i) > 1
-    error('too many axis in figure (more than one)')
+    error('too many axes in figure (more than one)')
 else
     ax = Ch_fig(out_i);
 end
 
 end
 
+
+function lines = get_line_from_ax(Ax)
+
+Ch_ax = Ax.Children;
+
+clc
+out_i = [];
+for i = 1:numel(Ch_ax)
+%     disp([num2str(i) ' : ' class(Ch_ax(i))])
+    if class(Ch_ax(i)) == "matlab.graphics.chart.primitive.Line"
+        out_i = [out_i i];
+    end
+end
+
+lines = Ch_ax(out_i);
+
+end
 
 
