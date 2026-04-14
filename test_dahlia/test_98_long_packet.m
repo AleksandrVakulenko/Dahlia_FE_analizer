@@ -11,7 +11,7 @@ cmd = 200;
 
 
 [d_bytes, size_bytes] = data_uint32_to_bytes(data);
-[checksum, checksum_bytes] = adler32(d_bytes);
+[checksum, checksum_bytes] = FE_loop_utils.adler32(d_bytes);
 CMD_packet = [uint8(cmd) size_bytes checksum_bytes d_bytes];
 
 

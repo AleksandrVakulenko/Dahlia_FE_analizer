@@ -43,8 +43,11 @@ classdef DWM_graph < handle
         end
 
         function clear(obj)
+            try
             Axes = get_ax_from_fig(obj.fig);
             delete(Axes);
+            catch
+            end
             axes(obj.fig);
         end
 
