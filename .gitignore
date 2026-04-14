@@ -1,5 +1,6 @@
 test_closed/
 *.asv
 *.mat
+*local_memo*.txt
 
 !test_dahlia/*.mat
