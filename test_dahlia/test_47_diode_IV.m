@@ -13,7 +13,7 @@ Amp = 0.25; % V
 Period = 10; % s
 DC_bias = 0; % V
 Duty = 50; % [100%]
-wf_triangle = Pulse_waveform_init(Amp, Period, DC_bias, Duty, "p", "sine", false);
+wf_triangle = Pulse_waveform_init(Amp, Period, DC_bias, Duty, "positive", "sin", false);
 Ammeter.send_long_cmd(201, wf_triangle);
 
 
@@ -84,14 +84,14 @@ box on
 
 
 function signal_f = filt_50Hz(signal)
-load('Filter_50Hz.mat')
+load('test_dahlia\Filter_50Hz.mat')
 Level_shift = mean(signal(1:round(end/10)));
 signal_f = filter(Filter_50Hz, signal-Level_shift);
 signal_f = signal_f + Level_shift;
 end
 
 function signal_f = filt_LP_0_5Hz(signal)
-load('Filter_LP_0_5Hz.mat')
+load('test_dahlia\Filter_LP_0_5Hz.mat')
 Level_shift = mean(signal(1:round(end/10)));
 signal_f = filter(Filter_LP_0_5Hz, signal-Level_shift);
 signal_f = signal_f + Level_shift;

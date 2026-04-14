@@ -8,7 +8,7 @@ classdef Pulse_waveform_init
         arguments
             amp double
             period double
-            bias bouble
+            bias double
             duty_cycle double
             pulse_type {mustBeMember(pulse_type, ["bipolar", "b", ...
                 "inverse_bipolar", "ib", "bi", "pos", "positive", "p", ...
