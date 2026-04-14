@@ -2,7 +2,37 @@
 classdef Pulse_waveform_init
 
     methods (Access = public)
-        function obj = Pulse_waveform_init(amp, period, bias, duty_cycle, pulse_type, gen_type, continuous)
+        function obj = Pulse_waveform_init(amp, period, bias, duty_cycle, ...
+                pulse_type, gen_type, continuous)
+
+        arguments
+            amp double
+            period double
+            bias bouble
+            duty_cycle double
+            pulse_type {mustBeMember(pulse_type, ["bipolar", "b", ...
+                "inverse_bipolar", "ib", "bi", "pos", "positive", "p", ...
+                "neg", "negative", "n"])}
+            gen_type {mustBeMember(gen_type, ["triangle", "tri", "sin", ...
+                "sine", "noise", "pulse", "square", "sq"])}
+            continuous logical
+        end
+            
+            % NOTE: warning for legacy code
+            if any(pulse_type == ["b", "ib", "bi", "pos", "p", "neg", "n"])
+                msg = ['Legacy code, use only ["bipolar", "inverse_bipolar", ' ...
+                    '"positive", "negative"] as value of <pulse_type>'];
+                msgbox(msg);
+                warning(msg);
+            end
+            if any(gen_type == ["tri", "sine", "square", "sq"])
+                msg = ['Legacy code, use only ["triangle", "sin", "noise", ' ...
+                    '"pulse"] as value of <gen_type>'];
+                msgbox(msg);
+                warning(msg);
+            end
+            % -----------------------------
+
             switch pulse_type
                 case {"bipolar", "b"}
                     obj.pulse_type = 1;
