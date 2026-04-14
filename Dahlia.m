@@ -496,7 +496,7 @@ function [d_bytes, size_bytes] = convert2bytes(data)
             [d_bytes, size_bytes] = data_int32_to_bytes(data);
         case "single"
             [d_bytes, size_bytes] = data_single_to_bytes(data);
-        case "Pulse_waveform_init"
+        case "FE_loop_utils.Pulse_waveform_init"
             [d_bytes, size_bytes] = data_wf_pulse_to_bytes(data);
         otherwise
             error('Wrong type to byte conversion')

@@ -32,13 +32,13 @@ switch voltage_ch
         error('Wrong "voltage_ch" value in Loop_options')
 end
 
-Draw_obj = DWM_graph(fig);
+Draw_obj = FE_loop_utils.DWM_graph(fig);
 draw_cmd = true;
 
 if ~inverse
-    init_pol = 'n';
+    init_pol = 'negative';
 else
-    init_pol = 'p';
+    init_pol = 'positive';
 end
 
 switch init_pulse
@@ -76,13 +76,13 @@ end
 
 function feloop = measure_pos_part(obj, WF_str, draw_cmd, amp, Draw_obj, divider, delay, refnum, feloop)
 
-set_waveform(obj, WF_str, 'p')
+set_waveform(obj, WF_str, 'positive')
 [E_part, P_part] = measure_part(obj, draw_cmd, amp, Draw_obj, divider); % UPDATE
 feloop.init.E.p = E_part;
 feloop.init.P.p = P_part;
 pause(delay)
 
-set_waveform(obj, WF_str, 'p')
+set_waveform(obj, WF_str, 'positive')
 [E_part, P_part] = measure_part(obj, draw_cmd, amp, Draw_obj, divider); % UPDATE
 feloop.ref.E.p = E_part;
 feloop.ref.P.p = P_part;
@@ -90,7 +90,7 @@ pause(delay)
 
 if refnum > 1
     for rn = 1:refnum-1
-        set_waveform(obj, WF_str, 'p')
+        set_waveform(obj, WF_str, 'positive')
         [E_part, P_part] = measure_part(obj, draw_cmd, amp, Draw_obj, divider); % UPDATE
         feloop.refnext(rn).E.p = E_part;
         feloop.refnext(rn).P.p = P_part;
@@ -103,13 +103,13 @@ end
 
 function feloop = measure_neg_part(obj, WF_str, draw_cmd, amp, Draw_obj, divider, delay, refnum, feloop)
 
-set_waveform(obj, WF_str, 'n')
+set_waveform(obj, WF_str, 'negative')
 [E_part, P_part] = measure_part(obj, draw_cmd, amp, Draw_obj, divider); % UPDATE
 feloop.init.E.n = E_part;
 feloop.init.P.n = P_part;
 pause(delay)
 
-set_waveform(obj, WF_str, 'n')
+set_waveform(obj, WF_str, 'negative')
 [E_part, P_part] = measure_part(obj, draw_cmd, amp, Draw_obj, divider); % UPDATE
 feloop.ref.E.n = E_part;
 feloop.ref.P.n = P_part;
@@ -117,7 +117,7 @@ pause(delay)
 
 if refnum > 1
     for rn = 1:refnum-1
-        set_waveform(obj, WF_str, 'n')
+        set_waveform(obj, WF_str, 'negative')
         [E_part, P_part] = measure_part(obj, draw_cmd, amp, Draw_obj, divider); % UPDATE
         feloop.refnext(rn).E.n = E_part;
         feloop.refnext(rn).P.n = P_part;
@@ -189,7 +189,7 @@ end
 
 function set_waveform(Ammeter, WF_str, polarity)
 Duty = 50;
-wf_gen = Pulse_waveform_init(WF_str.amp, WF_str.period, 0, Duty, polarity, WF_str.type, false);
+wf_gen = FE_loop_utils.Pulse_waveform_init(WF_str.amp, WF_str.period, 0, Duty, polarity, WF_str.type, false);
 Ammeter.send_long_cmd(201, wf_gen);
 
 end

@@ -8,7 +8,7 @@ Ammeter.switch_feedback_res(0, 'low');
 Current_to_switch = 550e-12;
 flag = false;
 
-Draw_obj = DWM_graph(fig);
+Draw_obj = FE_loop_utils.DWM_graph(fig);
 Draw_obj.add_new_and_shadow_prev('r', '-', 1.2);
 
 Ammeter.enable_feedback(1);

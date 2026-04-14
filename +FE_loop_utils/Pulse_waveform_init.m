@@ -20,14 +20,15 @@ classdef Pulse_waveform_init
             
             % NOTE: warning for legacy code
             if any(pulse_type == ["b", "ib", "bi", "pos", "p", "neg", "n"])
-                msg = ['Legacy code, use only ["bipolar", "inverse_bipolar", ' ...
-                    '"positive", "negative"] as value of <pulse_type>'];
+                msg = ['Pulse_waveform_init: legacy code, use only ' ...
+                    '["bipolar", "inverse_bipolar", "positive", "negative"] ' ...
+                    'as value of <pulse_type>'];
                 msgbox(msg);
                 warning(msg);
             end
             if any(gen_type == ["tri", "sine", "square", "sq"])
-                msg = ['Legacy code, use only ["triangle", "sin", "noise", ' ...
-                    '"pulse"] as value of <gen_type>'];
+                msg = ['Pulse_waveform_init: legacy code, use only ' ...
+                    '["triangle", "sin", "noise", "pulse"] as value of <gen_type>'];
                 msgbox(msg);
                 warning(msg);
             end
