@@ -1,4 +1,5 @@
-*.*
+test_closed/
+*.asv
+*.mat
 
-!.gitignore
-!*.m
+!test_dahlia/*.mat
