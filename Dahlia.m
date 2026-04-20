@@ -5,24 +5,23 @@
 % F9 on Ammeter.delete -->
 % unable to reconnect
 
-classdef Dahlia < handle
+classdef Dahlia < aDevice
     %--------------------------------PUBLIC--------------------------------
     methods (Access = public)
         function obj = Dahlia(port_name)
-            close_all_classes(class(obj));
-            obj.COM_port_str = char(port_name);
-            port_name_check(obj.COM_port_str);
-            obj.Serial_obj = serialport(obj.COM_port_str, 9600);
-            disp(['Dahlia connected at port: ' obj.COM_port_str])
-            obj.connected_flag = 1;
+%             close_all_classes(class(obj));
+%             obj.COM_port_str = char(port_name);
+%             port_name_check(obj.COM_port_str);
+%             obj.Serial_obj = serialport(obj.COM_port_str, 9600);
+            obj@aDevice(Connector_COM_USB(port_name));
+%             disp(['Dahlia connected at port: ' obj.COM_port_str])
+            disp(['Dahlia connected at port: ' port_name])
         end
 
         function delete(obj)
-            if obj.connected_flag == 1
-                %                 obj.sink_to_gnd();
-                delete(obj.Serial_obj);
-                disp('Dahlia closed');
-            end
+            % obj.sink_to_gnd();
+%             delete(obj.Serial_obj);
+            disp('Dahlia closed');
         end
 
         %-------------------------------CMD--------------------------------
@@ -196,7 +195,9 @@ classdef Dahlia < handle
                 if N > 1024 % FIXME: magic constant
                     warning("ERROR! LONG PACKET >1024 bytes")
                 else
-                    write(obj.Serial_obj, uint8(CMD_packet), "uint8");
+                    obj.con.send(uint8(CMD_packet));
+%                     FIXME: delete
+%                     write(obj.Serial_obj, uint8(CMD_packet), "uint8");
                     pause(0.012);
                 end
             end
@@ -232,7 +233,9 @@ classdef Dahlia < handle
         end    
 
         function flush_data(obj)
-            serial_flush(obj.Serial_obj);
+            obj.con.read;
+            % FIXME: delete
+%             serial_flush(obj.Serial_obj);
         end
         %------------------------Acquisition_END---------------------------
     end
@@ -240,10 +243,10 @@ classdef Dahlia < handle
 
     %-------------------------------PRIVATE--------------------------------
     properties (Access = private)
-        COM_port_str = '';
-        Serial_obj = [];
+%         COM_port_str = '';
+%         Serial_obj = [];
         number_of_bytes = 16;
-        connected_flag = 0;
+        stash = [];
     end
 
     methods (Access = private)
@@ -263,23 +266,45 @@ classdef Dahlia < handle
             arg_b_bytes = flip(typecast(uint32(arg_b), 'uint8'));
             CMD_packet = [uint8(cmd) arg_a_bytes arg_b_bytes];
             % uint8(CMD_packet)
-            write(obj.Serial_obj, uint8(CMD_packet), "uint8");
+            obj.con.send(uint8(CMD_packet))
+            % FIXME: delete
+%             write(obj.Serial_obj, uint8(CMD_packet), "uint8");
             pause(0.012);
         end
 
 
 
         function Data = get_raw_data(obj)
-            serial_obj = obj.Serial_obj;
-            Bytes_count = serial_obj.NumBytesAvailable;
 
-            if Bytes_count < obj.number_of_bytes
-                Data = [];
-            else
-                Bytes_to_read = floor(Bytes_count/obj.number_of_bytes)*obj.number_of_bytes;
-                Data = read(serial_obj, Bytes_to_read, "uint8");
-                Data = reshape(Data, [obj.number_of_bytes numel(Data)/obj.number_of_bytes]);
+            Data = obj.con.read;
+            Data = double(uint8(Data)); % NOTE: do we need this?
+
+            Data = [obj.stash Data];
+            obj.stash = [];
+
+            Bytes_count = numel(Data);
+
+            Bytes_to_read = floor(Bytes_count/obj.number_of_bytes) * ...
+                obj.number_of_bytes;
+            Bytes_to_stash = Bytes_count - Bytes_to_read;
+
+            if Bytes_to_stash > 0
+                obj.stash = Data(Bytes_to_read+1 : end);
+                Data(Bytes_to_read+1 : end) = [];
             end
+            Data = reshape(Data, [obj.number_of_bytes ...
+                numel(Data)/obj.number_of_bytes]);
+
+%             serial_obj = obj.Serial_obj;
+%             Bytes_count = serial_obj.NumBytesAvailable;
+% 
+%             if Bytes_count < obj.number_of_bytes
+%                 Data = [];
+%             else
+%                 Bytes_to_read = floor(Bytes_count/obj.number_of_bytes)*obj.number_of_bytes;
+%                 Data = read(serial_obj, Bytes_to_read, "uint8");
+%                 Data = reshape(Data, [obj.number_of_bytes numel(Data)/obj.number_of_bytes]);
+%             end
         end
 
     end
@@ -437,22 +462,22 @@ end
 
 % -------------------------------------------------------------------------
 
-function port_name_check(port_name)
-Avilable_ports = serialportlist('available');
-
-if ~(sum(Avilable_ports == port_name) == 1)
-    Text_ports_list = '';
-    for i = 1:numel(Avilable_ports)
-        Text_ports_list = [Text_ports_list char(Avilable_ports(i)) newline];
-    end
-
-    msg = ['ERROR: No such com port name.' newline ...
-        'List of avilable ports:' newline ...
-        Text_ports_list ...
-        'Provided name: ' port_name];
-    error(msg)
-end
-end
+% function port_name_check(port_name)
+% Avilable_ports = serialportlist('available');
+% 
+% if ~(sum(Avilable_ports == port_name) == 1)
+%     Text_ports_list = '';
+%     for i = 1:numel(Avilable_ports)
+%         Text_ports_list = [Text_ports_list char(Avilable_ports(i)) newline];
+%     end
+% 
+%     msg = ['ERROR: No such com port name.' newline ...
+%         'List of avilable ports:' newline ...
+%         Text_ports_list ...
+%         'Provided name: ' port_name];
+%     error(msg)
+% end
+% end
 
 
 function serial_flush(serial_obj)
@@ -464,22 +489,22 @@ end
 end
 
 
-function close_all_classes(class_name)
-input_class_name = class_name;
-baseVariables = evalin('base' , 'whos');
-Indexes = string({baseVariables.class}) == input_class_name;
-Var_names = string({baseVariables.name});
-Var_names = Var_names(Indexes);
-Valid = zeros(size(Var_names));
-for i = 1:numel(Var_names)
-    Valid(i) = evalin('base', ['isvalid(' char(Var_names(i)) ')']);
-end
-Valid = logical(Valid);
-Var_names = Var_names(Valid);
-for i = 1:numel(Var_names)
-    evalin('base', ['delete(' char(Var_names(i)) ')']);
-end
-end
+% function close_all_classes(class_name)
+% input_class_name = class_name;
+% baseVariables = evalin('base' , 'whos');
+% Indexes = string({baseVariables.class}) == input_class_name;
+% Var_names = string({baseVariables.name});
+% Var_names = Var_names(Indexes);
+% Valid = zeros(size(Var_names));
+% for i = 1:numel(Var_names)
+%     Valid(i) = evalin('base', ['isvalid(' char(Var_names(i)) ')']);
+% end
+% Valid = logical(Valid);
+% Var_names = Var_names(Valid);
+% for i = 1:numel(Var_names)
+%     evalin('base', ['delete(' char(Var_names(i)) ')']);
+% end
+% end
 
 
 
