@@ -124,7 +124,7 @@ function ax = get_ax_from_fig(fig)
 
 Ch_fig = fig.Children;
 
-clc
+% clc
 out_i = [];
 for i = 1:numel(Ch_fig)
 %     disp([num2str(i) ' : ' class(Ch_fig(i))])
@@ -148,7 +148,7 @@ function lines = get_line_from_ax(Ax)
 
 Ch_ax = Ax.Children;
 
-clc
+% clc
 out_i = [];
 for i = 1:numel(Ch_ax)
 %     disp([num2str(i) ' : ' class(Ch_ax(i))])

@@ -9,18 +9,12 @@ classdef Dahlia < aDevice
     %--------------------------------PUBLIC--------------------------------
     methods (Access = public)
         function obj = Dahlia(port_name)
-%             close_all_classes(class(obj));
-%             obj.COM_port_str = char(port_name);
-%             port_name_check(obj.COM_port_str);
-%             obj.Serial_obj = serialport(obj.COM_port_str, 9600);
             obj@aDevice(Connector_COM_USB(port_name));
-%             disp(['Dahlia connected at port: ' obj.COM_port_str])
             disp(['Dahlia connected at port: ' port_name])
         end
 
         function delete(obj)
             % obj.sink_to_gnd();
-%             delete(obj.Serial_obj);
             disp('Dahlia closed');
         end
 
@@ -196,8 +190,6 @@ classdef Dahlia < aDevice
                     warning("ERROR! LONG PACKET >1024 bytes")
                 else
                     obj.con.send(uint8(CMD_packet));
-%                     FIXME: delete
-%                     write(obj.Serial_obj, uint8(CMD_packet), "uint8");
                     pause(0.012);
                 end
             end
@@ -232,10 +224,9 @@ classdef Dahlia < aDevice
             end
         end    
 
+        % FIXME: maybe unused
         function flush_data(obj)
-            obj.con.read;
-            % FIXME: delete
-%             serial_flush(obj.Serial_obj);
+            obj.con.flush;
         end
         %------------------------Acquisition_END---------------------------
     end
@@ -246,7 +237,6 @@ classdef Dahlia < aDevice
 %         COM_port_str = '';
 %         Serial_obj = [];
         number_of_bytes = 16;
-        stash = [];
     end
 
     methods (Access = private)
@@ -265,46 +255,16 @@ classdef Dahlia < aDevice
             arg_a_bytes = flip(typecast(uint32(arg_a), 'uint8'));
             arg_b_bytes = flip(typecast(uint32(arg_b), 'uint8'));
             CMD_packet = [uint8(cmd) arg_a_bytes arg_b_bytes];
-            % uint8(CMD_packet)
             obj.con.send(uint8(CMD_packet))
-            % FIXME: delete
-%             write(obj.Serial_obj, uint8(CMD_packet), "uint8");
             pause(0.012);
         end
 
-
-
         function Data = get_raw_data(obj)
-
-            Data = obj.con.read;
+            Data = obj.con.read(obj.number_of_bytes);
             Data = double(uint8(Data)); % NOTE: do we need this?
 
-            Data = [obj.stash Data];
-            obj.stash = [];
-
-            Bytes_count = numel(Data);
-
-            Bytes_to_read = floor(Bytes_count/obj.number_of_bytes) * ...
-                obj.number_of_bytes;
-            Bytes_to_stash = Bytes_count - Bytes_to_read;
-
-            if Bytes_to_stash > 0
-                obj.stash = Data(Bytes_to_read+1 : end);
-                Data(Bytes_to_read+1 : end) = [];
-            end
             Data = reshape(Data, [obj.number_of_bytes ...
                 numel(Data)/obj.number_of_bytes]);
-
-%             serial_obj = obj.Serial_obj;
-%             Bytes_count = serial_obj.NumBytesAvailable;
-% 
-%             if Bytes_count < obj.number_of_bytes
-%                 Data = [];
-%             else
-%                 Bytes_to_read = floor(Bytes_count/obj.number_of_bytes)*obj.number_of_bytes;
-%                 Data = read(serial_obj, Bytes_to_read, "uint8");
-%                 Data = reshape(Data, [obj.number_of_bytes numel(Data)/obj.number_of_bytes]);
-%             end
         end
 
     end
@@ -462,54 +422,6 @@ end
 
 % -------------------------------------------------------------------------
 
-% function port_name_check(port_name)
-% Avilable_ports = serialportlist('available');
-% 
-% if ~(sum(Avilable_ports == port_name) == 1)
-%     Text_ports_list = '';
-%     for i = 1:numel(Avilable_ports)
-%         Text_ports_list = [Text_ports_list char(Avilable_ports(i)) newline];
-%     end
-% 
-%     msg = ['ERROR: No such com port name.' newline ...
-%         'List of avilable ports:' newline ...
-%         Text_ports_list ...
-%         'Provided name: ' port_name];
-%     error(msg)
-% end
-% end
-
-
-function serial_flush(serial_obj)
-pause(0.05) %FIXME: why pause?
-Bytes_count = serial_obj.NumBytesAvailable;
-if Bytes_count > 0
-    read(serial_obj, Bytes_count, "uint8");
-end
-end
-
-
-% function close_all_classes(class_name)
-% input_class_name = class_name;
-% baseVariables = evalin('base' , 'whos');
-% Indexes = string({baseVariables.class}) == input_class_name;
-% Var_names = string({baseVariables.name});
-% Var_names = Var_names(Indexes);
-% Valid = zeros(size(Var_names));
-% for i = 1:numel(Var_names)
-%     Valid(i) = evalin('base', ['isvalid(' char(Var_names(i)) ')']);
-% end
-% Valid = logical(Valid);
-% Var_names = Var_names(Valid);
-% for i = 1:numel(Var_names)
-%     evalin('base', ['delete(' char(Var_names(i)) ')']);
-% end
-% end
-
-
-
-
-
 function [d_bytes, size_bytes] = convert2bytes(data)
     % class(data)
     switch class(data)
@@ -527,7 +439,6 @@ function [d_bytes, size_bytes] = convert2bytes(data)
             error('Wrong type to byte conversion')
     end
 end
-
 
 
 function [data, size_bytes] = data_uint8_to_bytes(data)
