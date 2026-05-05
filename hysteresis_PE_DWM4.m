@@ -15,9 +15,10 @@ obj = ammeter_obj;
 
 if refnum > 0
     DWM_type = true;
-    period = period/2;
+%     period = period/2; % FIXME: uncomment in future update [with FX02]
 else
     DWM_type = false;
+    period = period*2; % FIXME [FX02]: delete in future update
 end
 
 WF_str.amp = amp/gain;
