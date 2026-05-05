@@ -152,7 +152,8 @@ Ch_ax = Ax.Children;
 out_i = [];
 for i = 1:numel(Ch_ax)
 %     disp([num2str(i) ' : ' class(Ch_ax(i))])
-    if class(Ch_ax(i)) == "matlab.graphics.chart.primitive.Line"
+    if class(Ch_ax(i)) == "matlab.graphics.chart.primitive.Line" || ...
+            class(Ch_ax(i)) == "matlab.graphics.primitive.Line"
         out_i = [out_i i];
     end
 end
