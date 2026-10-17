@@ -1,7 +1,6 @@
-name:
-Dahlia
-
-dependencies:
-aDevice
-
-info:
+{
+  "name": "Dahlia",
+  "dependecies": "aDevice",
+  "info": "Special type low current ammeter and function generator",
+  "Tegs": ""
+}
